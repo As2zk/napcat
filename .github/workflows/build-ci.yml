@@ -2,9 +2,6 @@ name: Build NapCat Artifacts
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 permissions: write-all
 

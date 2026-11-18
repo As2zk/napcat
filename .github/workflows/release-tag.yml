@@ -2,9 +2,6 @@ name: Release Tag
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - 'v*'
 
 permissions: write-all
 

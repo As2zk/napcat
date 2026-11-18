@@ -2,7 +2,7 @@
 # PR 构建工作流
 # =============================================================================
 # 安全模型：
-#   1. pull_request_target / issue_comment 入口只读取元数据、检查权限、更新评论并触发构建。
+#   1. 仓库协作者通过 workflow_dispatch 指定要构建的 PR 和提交。
 #   2. 真正执行 PR 代码的构建流程只在 workflow_dispatch 中运行。
 #   3. 构建流程不具备写仓库/写评论/读 secrets 权限，显式清空 GITHUB_TOKEN，不持久化 checkout 凭据。
 #   4. 版本号在 Action 中提前生成，通过 NAPCAT_VERSION 传给 Vite 插件，插件无需 GitHub token。
@@ -12,12 +12,6 @@
 name: Build PR
 
 on:
-  pull_request_target:
-    types: [opened, synchronize, reopened]
-
-  issue_comment:
-    types: [created]
-
   workflow_dispatch:
     inputs:
       pr_number:
@@ -41,7 +35,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: pr-build-${{ github.event_name == 'workflow_dispatch' && inputs.pr_number || github.event_name == 'pull_request_target' && github.event.pull_request.number || github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '/build') && github.event.issue.number || github.run_id }}
+  group: pr-build-${{ inputs.pr_number }}
   cancel-in-progress: true
 
 jobs:
